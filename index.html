@@ -1,76 +1,94 @@
-<script>
-  const canvas = document.getElementById('gameCanvas');
-  const ctx = canvas.getContext('2d');
-  
-  // Sprite 設定
-  const sprite = new Image();
-  sprite.src = 'walker_sprite.png';
-  const totalFrames = 3;
-  const spriteSheetWidth = 1024;
-  const spriteSheetHeight = 1024;
-  const frameWidth = spriteSheetWidth / totalFrames;
-  const frameHeight = spriteSheetHeight;
-  
-  // 地圖設定
-  const bg = new Image();
-  bg.src = 'taiwan_map.png'; // 請使用一張長型地圖
-  let bgY = 0; // 地圖 Y 軸位移
-  
-  // 畫面中角色固定位置
-  const charX = canvas.width / 2 - frameWidth / 4;
-  const charY = canvas.height / 2 - frameHeight / 4;
-  
-  let frameIndex = 0;
-  let frameCount = 0;
-  let isMoving = false;
-  
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-    // 畫背景地圖
-    ctx.drawImage(bg, 0, bgY, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
-  
-    // 畫角色
-    if (isMoving) {
-      frameCount++;
-      if (frameCount % 10 === 0) {
-        frameIndex = (frameIndex + 1) % totalFrames;
-      }
-    } else {
-      frameIndex = 0;
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>你要跟我去約會嗎？</title>
+  <style>
+    body {
+      margin: 0;
+      background: #fbe7e2;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      overflow: hidden;
     }
-  
-    ctx.drawImage(
-      sprite,
-      frameIndex * frameWidth, 0,
-      frameWidth, frameHeight,
-      charX, charY,
-      frameWidth / 2, frameHeight / 2
-    );
-  
-    requestAnimationFrame(draw);
-  }
-  
-  document.addEventListener('keydown', (e) => {
-    const step = 10;
-    if (e.key === 'ArrowUp') {
-      isMoving = true;
-      if (bgY > 0) bgY -= step;
-    } else if (e.key === 'ArrowDown') {
-      isMoving = true;
-      if (bgY < bg.height - canvas.height) bgY += step;
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
     }
-  });
-  
-  document.addEventListener('keyup', (e) => {
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-      isMoving = false;
-      frameCount = 0;
+
+    .character {
+      width: 128px;
+      image-rendering: pixelated;
+      margin-bottom: 20px;
     }
-  });
-  
-  bg.onload = () => {
-    sprite.onload = draw;
-  };
+
+    .bubble {
+      background: white;
+      border: 2px solid #444;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 300px;
+      box-shadow: 3px 3px 0 #444;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .buttons {
+      position: relative;
+    }
+
+    .buttons button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #888;
+      position: relative;
+    }
+
+    .yes {
+      background-color: #ff88aa;
+      color: white;
+    }
+
+    .maybe {
+      background-color: #ccc;
+      color: #333;
+      position: absolute;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="walker_standing.png" alt="角色" class="character" />
+    <div class="bubble">你要跟我去約會嗎？</div>
+    <div class="buttons">
+      <button class="yes" onclick="alert('耶！我們出發吧～💖')">好呀 ❤️</button>
+      <button class="maybe" id="maybeBtn">再想想 🤔</button>
+    </div>
+  </div>
+
+  <script>
+    const maybeBtn = document.getElementById('maybeBtn');
+
+    maybeBtn.addEventListener('mouseenter', () => {
+      const container = document.querySelector('.container');
+      const maxX = window.innerWidth - maybeBtn.offsetWidth - 40;
+      const maxY = window.innerHeight - maybeBtn.offsetHeight - 40;
+
+      const newX = Math.floor(Math.random() * maxX);
+      const newY = Math.floor(Math.random() * maxY);
+
+      maybeBtn.style.left = `${newX}px`;
+      maybeBtn.style.top = `${newY}px`;
+    });
   </script>
-  
+</body>
+</html>
