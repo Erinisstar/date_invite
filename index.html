@@ -42,14 +42,15 @@
     }
     #erin {
       position: absolute;
-      width: 256px;
-      height: 256px;
-      background-image: url('walker_sprite.png');
-      background-size: 1024px 1536px;
-      background-position: 0 -768px; /* 第四列向右走 */
+      width: 128px;
+      height: 128px;
+      background-image: url('904e73f4-17ae-440a-90d7-dbab8d8a4412.png');
+      background-size: 768px 768px; /* 總共 3 格一行 */
+      background-position: 0 0;
       top: 0;
       left: 0;
       display: none;
+      image-rendering: pixelated;
     }
   </style>
 </head>
@@ -84,21 +85,22 @@
 
       let position = 0;
       let frame = 0;
-      const stepSize = 5;
+      const stepSize = 4;
       const frameWidth = 256;
-      const frameCount = 4;
+      const erinDisplayWidth = 128;
+      const frameCount = 3;
 
       const walkInterval = setInterval(() => {
         position += stepSize;
         frame = (frame + 1) % frameCount;
 
         erin.style.left = position + "px";
-        erin.style.backgroundPosition = `-${frame * frameWidth}px -768px`;
+        erin.style.backgroundPosition = `-${frame * frameWidth}px 0`;
 
         if (position > window.innerWidth) {
           clearInterval(walkInterval);
         }
-      }, 100);
+      }, 150);
     });
   </script>
 
