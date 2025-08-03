@@ -20,45 +20,51 @@
 <body>
 <canvas id="gameCanvas" width="768" height="1152"></canvas>
 <script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-const sprite = new Image();
-sprite.src = 'walker_sprite.png'; // 建議用走路動畫圖 (如 sprite sheet)
-
-let spriteFrame = 0;
-let posY = canvas.height - 120;
-let posX = canvas.width / 2 - 32;
-
-let frameCount = 0;
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 畫角色動畫（假設 sprite sheet 每格寬64px，高64px，共4格）
-  ctx.drawImage(sprite, spriteFrame * 64, 0, 64, 64, posX, posY, 64, 64);
-
-  frameCount++;
-  if (frameCount % 10 === 0) {
-    spriteFrame = (spriteFrame + 1) % 4;
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  const sprite = new Image();
+  sprite.src = 'walker_sprite.png'; // 要用你剛剛那張圖的檔名
+  
+  const FRAME_WIDTH = 64;
+  const FRAME_HEIGHT = 64;
+  const FRAME_COUNT = 3;
+  
+  let spriteFrame = 0;
+  let posY = canvas.height - FRAME_HEIGHT - 10;
+  let posX = canvas.width / 2 - FRAME_WIDTH / 2;
+  let frameCount = 0;
+  
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    // 畫出目前幀的角色圖
+    ctx.drawImage(
+      sprite,
+      spriteFrame * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT,
+      posX, posY, FRAME_WIDTH, FRAME_HEIGHT
+    );
+  
+    frameCount++;
+    if (frameCount % 10 === 0) {
+      spriteFrame = (spriteFrame + 1) % FRAME_COUNT;
+    }
+  
+    requestAnimationFrame(draw);
   }
-
-  requestAnimationFrame(draw);
-}
-
-function move(dir) {
-  if (dir === 'up' && posY > 0) posY -= 10;
-  if (dir === 'down' && posY < canvas.height - 64) posY += 10;
-}
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowUp') move('up');
-  if (e.key === 'ArrowDown') move('down');
-});
-
-sprite.onload = () => {
-  draw();
-};
-</script>
+  
+  function move(dir) {
+    if (dir === 'up' && posY > 0) posY -= 10;
+    if (dir === 'down' && posY < canvas.height - FRAME_HEIGHT) posY += 10;
+  }
+  
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp') move('up');
+    if (e.key === 'ArrowDown') move('down');
+  });
+  
+  sprite.onload = draw;
+  </script>
+  
 </body>
 </html>
