@@ -1,86 +1,76 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-  <meta charset="UTF-8" />
-  <title>角色動畫測試</title>
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-    }
-    canvas {
-      display: block;
-      margin: 0 auto;
-      background-color: #222;
-    }
-  </style>
-</head>
-<body>
-<canvas id="gameCanvas" width="512" height="512"></canvas>
 <script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-
-const sprite = new Image();
-sprite.src = 'walker_sprite.png';
-
-const totalFrames = 3;
-const spriteSheetWidth = 1024;
-const spriteSheetHeight = 1024;
-const frameWidth = spriteSheetWidth / totalFrames;
-const frameHeight = spriteSheetHeight;
-
-let frameIndex = 0;
-let frameCount = 0;
-let posX = canvas.width / 2 - frameWidth / 4;
-let posY = canvas.height / 2 - frameHeight / 4;
-
-let isMoving = false;
-
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // 如果正在移動才更新 frame
-  if (isMoving) {
-    frameCount++;
-    if (frameCount % 10 === 0) {
-      frameIndex = (frameIndex + 1) % totalFrames;
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  // Sprite 設定
+  const sprite = new Image();
+  sprite.src = 'walker_sprite.png';
+  const totalFrames = 3;
+  const spriteSheetWidth = 1024;
+  const spriteSheetHeight = 1024;
+  const frameWidth = spriteSheetWidth / totalFrames;
+  const frameHeight = spriteSheetHeight;
+  
+  // 地圖設定
+  const bg = new Image();
+  bg.src = 'taiwan_map.png'; // 請使用一張長型地圖
+  let bgY = 0; // 地圖 Y 軸位移
+  
+  // 畫面中角色固定位置
+  const charX = canvas.width / 2 - frameWidth / 4;
+  const charY = canvas.height / 2 - frameHeight / 4;
+  
+  let frameIndex = 0;
+  let frameCount = 0;
+  let isMoving = false;
+  
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+    // 畫背景地圖
+    ctx.drawImage(bg, 0, bgY, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+  
+    // 畫角色
+    if (isMoving) {
+      frameCount++;
+      if (frameCount % 10 === 0) {
+        frameIndex = (frameIndex + 1) % totalFrames;
+      }
+    } else {
+      frameIndex = 0;
     }
-  } else {
-    frameIndex = 0; // 靜止時顯示第一張圖
+  
+    ctx.drawImage(
+      sprite,
+      frameIndex * frameWidth, 0,
+      frameWidth, frameHeight,
+      charX, charY,
+      frameWidth / 2, frameHeight / 2
+    );
+  
+    requestAnimationFrame(draw);
   }
-
-  ctx.drawImage(
-    sprite,
-    frameIndex * frameWidth, 0,
-    frameWidth, frameHeight,
-    posX, posY,
-    frameWidth / 2, frameHeight / 2
-  );
-
-  requestAnimationFrame(draw);
-}
-
-document.addEventListener('keydown', (e) => {
-  const step = 10;
-  isMoving = true;
-
-  if (e.key === 'ArrowUp') posY -= step;
-  else if (e.key === 'ArrowDown') posY += step;
-});
-
-document.addEventListener('keyup', (e) => {
-  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-    isMoving = false;
-    frameCount = 0;
-  }
-});
-
-sprite.onload = draw;
-
-sprite.onerror = () => {
-  alert('圖片載入失敗！請確認 walker_sprite.png 是否存在於此資料夾中。');
-};
-</script>
-</body>
-</html>
+  
+  document.addEventListener('keydown', (e) => {
+    const step = 10;
+    if (e.key === 'ArrowUp') {
+      isMoving = true;
+      if (bgY > 0) bgY -= step;
+    } else if (e.key === 'ArrowDown') {
+      isMoving = true;
+      if (bgY < bg.height - canvas.height) bgY += step;
+    }
+  });
+  
+  document.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      isMoving = false;
+      frameCount = 0;
+    }
+  });
+  
+  bg.onload = () => {
+    sprite.onload = draw;
+  };
+  </script>
+  
