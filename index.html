@@ -12,8 +12,6 @@
     canvas {
       display: block;
       margin: 0 auto;
-      background: url('taiwan_map.png') no-repeat;
-      background-size: cover;
     }
   </style>
 </head>
@@ -24,28 +22,30 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const sprite = new Image();
-sprite.src = 'walker_sprite.png'; // 請確認這張圖片已經放在正確位置
+sprite.src = 'walker_sprite.png';
 
-const FRAME_WIDTH = 64;
-const FRAME_HEIGHT = 64;
-const FRAME_COUNT = 3;
+const map = new Image();
+map.src = 'taiwan_map.png';
 
 let spriteFrame = 0;
-let posY = canvas.height - FRAME_HEIGHT - 10;
-let posX = canvas.width / 2 - FRAME_WIDTH / 2;
+let posY = canvas.height - 120;
+let posX = canvas.width / 2 - 32;
+
 let frameCount = 0;
 
+// 畫圖主程式
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(
-    sprite,
-    spriteFrame * FRAME_WIDTH, 0, FRAME_WIDTH, FRAME_HEIGHT,
-    posX, posY, FRAME_WIDTH, FRAME_HEIGHT
-  );
+
+  // 1. 先畫地圖
+  ctx.drawImage(map, 0, 0, canvas.width, canvas.height);
+
+  // 2. 再畫人物
+  ctx.drawImage(sprite, spriteFrame * 64, 0, 64, 64, posX, posY, 64, 64);
 
   frameCount++;
   if (frameCount % 10 === 0) {
-    spriteFrame = (spriteFrame + 1) % FRAME_COUNT;
+    spriteFrame = (spriteFrame + 1) % 3; // 有三格動畫
   }
 
   requestAnimationFrame(draw);
@@ -53,7 +53,7 @@ function draw() {
 
 function move(dir) {
   if (dir === 'up' && posY > 0) posY -= 10;
-  if (dir === 'down' && posY < canvas.height - FRAME_HEIGHT) posY += 10;
+  if (dir === 'down' && posY < canvas.height - 64) posY += 10;
 }
 
 document.addEventListener('keydown', (e) => {
@@ -61,7 +61,12 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowDown') move('down');
 });
 
-sprite.onload = draw;
+// 等待圖片都載入才開始畫
+map.onload = () => {
+  sprite.onload = () => {
+    draw();
+  };
+};
 </script>
 </body>
 </html>
