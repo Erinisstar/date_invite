@@ -8,13 +8,12 @@
       background-color: #fff0f5;
       font-family: "微軟正黑體", sans-serif;
       text-align: center;
-      margin: 0;
+      margin-top: 100px;
       overflow: hidden;
     }
     h1 {
       color: #d63384;
       font-size: 32px;
-      margin-top: 50px;
     }
     .btn {
       padding: 10px 20px;
@@ -39,20 +38,23 @@
       width: 100vw;
       height: 300px;
       margin-top: 40px;
+      overflow: hidden;
     }
     #erin {
       position: absolute;
-      width: 72px;
-      height: 72px;
-      background-image: url('walker_sprite.png'); /* 需要和圖片檔放在同一資料夾 */
-      background-size: 288px 72px;
-      background-position: 0 0;
-      top: 100px;
+      width: 256px;
+      height: 256px;
+      background-image: url('walker_sprite.png');
+      background-size: 1024px 1536px;
+      background-position: 0 -768px; /* 第四列向右走 */
+      top: 0;
       left: 0;
+      display: none;
     }
   </style>
 </head>
 <body>
+
   <h1>你願意跟我出去約會嗎？🥺</h1>
   <button class="btn" id="yes">好呀❤️</button>
   <button class="btn" id="no">不要</button>
@@ -66,7 +68,7 @@
     const yesBtn = document.getElementById("yes");
     const erin = document.getElementById("erin");
 
-    // 逃跑按鈕
+    // 不要亂跑
     noBtn.addEventListener("mouseover", function () {
       const x = Math.random() * (window.innerWidth - 100);
       const y = Math.random() * (window.innerHeight - 100);
@@ -74,17 +76,24 @@
       noBtn.style.top = `${y}px`;
     });
 
+    // 點好呀後開始動畫
     yesBtn.addEventListener("click", function () {
       yesBtn.style.display = "none";
       noBtn.style.display = "none";
+      erin.style.display = "block";
 
       let position = 0;
       let frame = 0;
+      const stepSize = 5;
+      const frameWidth = 256;
+      const frameCount = 4;
+
       const walkInterval = setInterval(() => {
-        position += 5;
-        frame = (frame + 1) % 4;
+        position += stepSize;
+        frame = (frame + 1) % frameCount;
+
         erin.style.left = position + "px";
-        erin.style.backgroundPosition = `-${frame * 72}px 0`;
+        erin.style.backgroundPosition = `-${frame * frameWidth}px -768px`;
 
         if (position > window.innerWidth) {
           clearInterval(walkInterval);
@@ -92,5 +101,6 @@
       }, 100);
     });
   </script>
+
 </body>
 </html>
