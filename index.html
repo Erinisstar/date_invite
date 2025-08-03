@@ -2,70 +2,68 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8" />
-  <title>從高雄走到竹南</title>
+  <title>角色動畫測試</title>
   <style>
     body {
       margin: 0;
-      overflow: hidden;
       background: #000;
     }
     canvas {
       display: block;
       margin: 0 auto;
-      background-color: #111;
+      background-color: #222;
     }
   </style>
 </head>
 <body>
-<canvas id="gameCanvas" width="768" height="1024"></canvas>
+<canvas id="gameCanvas" width="512" height="512"></canvas>
 <script>
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const sprite = new Image();
-sprite.src = 'walker_sprite.png'; // 確保圖片已經是 1024x1024、且是橫排3格動畫
+sprite.src = 'walker_sprite.png'; // 圖片必須放在同資料夾
 
-const frameWidth = 341;  // 每一格的寬度（1024 / 3）
-const frameHeight = 1024; // 高度整張圖就是角色高度
+const totalFrames = 3;
+const spriteSheetWidth = 1024;
+const spriteSheetHeight = 1024;
+const frameWidth = spriteSheetWidth / totalFrames;
+const frameHeight = spriteSheetHeight;
 
-let spriteFrame = 0;
+let frameIndex = 0;
 let frameCount = 0;
-let posY = canvas.height / 2 - frameHeight / 4; // 初始位置
-let posX = canvas.width / 2 - frameWidth / 4; // 居中顯示
+let posX = canvas.width / 2 - frameWidth / 4;
+let posY = canvas.height / 2 - frameHeight / 4;
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // 繪製目前動畫格
-  ctx.drawImage(sprite, spriteFrame * frameWidth, 0, frameWidth, frameHeight,
-    posX, posY, frameWidth / 2, frameHeight / 2); // 縮小顯示比例一半
+  ctx.drawImage(
+    sprite,
+    frameIndex * frameWidth, 0,
+    frameWidth, frameHeight,
+    posX, posY,
+    frameWidth / 2, frameHeight / 2 // 縮小比例
+  );
 
   frameCount++;
   if (frameCount % 10 === 0) {
-    spriteFrame = (spriteFrame + 1) % 3; // 只有三格
+    frameIndex = (frameIndex + 1) % totalFrames;
   }
 
   requestAnimationFrame(draw);
 }
 
-// 上下移動
-function move(dir) {
-  const step = 10;
-  if (dir === 'up' && posY > 0) posY -= step;
-  if (dir === 'down' && posY < canvas.height - frameHeight / 2) posY += step;
-}
-
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowUp') move('up');
-  if (e.key === 'ArrowDown') move('down');
+  const step = 10;
+  if (e.key === 'ArrowUp') posY -= step;
+  if (e.key === 'ArrowDown') posY += step;
 });
 
-sprite.onload = () => {
-  draw();
-};
+sprite.onload = draw;
 
 sprite.onerror = () => {
-  console.error("圖片載入失敗，請確認 walker_sprite.png 是否正確！");
+  alert('圖片載入失敗！請確認 walker_sprite.png 是否存在於此資料夾中。');
 };
 </script>
 </body>
