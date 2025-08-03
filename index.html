@@ -22,7 +22,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 const sprite = new Image();
-sprite.src = 'walker_sprite.png'; // 圖片必須放在同資料夾
+sprite.src = 'walker_sprite.png';
 
 const totalFrames = 3;
 const spriteSheetWidth = 1024;
@@ -35,29 +35,45 @@ let frameCount = 0;
 let posX = canvas.width / 2 - frameWidth / 4;
 let posY = canvas.height / 2 - frameHeight / 4;
 
+let isMoving = false;
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 如果正在移動才更新 frame
+  if (isMoving) {
+    frameCount++;
+    if (frameCount % 10 === 0) {
+      frameIndex = (frameIndex + 1) % totalFrames;
+    }
+  } else {
+    frameIndex = 0; // 靜止時顯示第一張圖
+  }
 
   ctx.drawImage(
     sprite,
     frameIndex * frameWidth, 0,
     frameWidth, frameHeight,
     posX, posY,
-    frameWidth / 2, frameHeight / 2 // 縮小比例
+    frameWidth / 2, frameHeight / 2
   );
-
-  frameCount++;
-  if (frameCount % 10 === 0) {
-    frameIndex = (frameIndex + 1) % totalFrames;
-  }
 
   requestAnimationFrame(draw);
 }
 
 document.addEventListener('keydown', (e) => {
   const step = 10;
+  isMoving = true;
+
   if (e.key === 'ArrowUp') posY -= step;
-  if (e.key === 'ArrowDown') posY += step;
+  else if (e.key === 'ArrowDown') posY += step;
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    isMoving = false;
+    frameCount = 0;
+  }
 });
 
 sprite.onload = draw;
