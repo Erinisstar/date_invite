@@ -8,11 +8,13 @@
       background-color: #fff0f5;
       font-family: "微軟正黑體", sans-serif;
       text-align: center;
-      margin-top: 100px;
+      margin: 0;
+      overflow: hidden;
     }
     h1 {
       color: #d63384;
       font-size: 32px;
+      margin-top: 50px;
     }
     .btn {
       padding: 10px 20px;
@@ -32,28 +34,39 @@
       color: #333;
       position: absolute;
     }
-    #melody {
-      display: none;
-      margin-top: 30px;
+    #scene {
+      position: relative;
+      width: 100vw;
+      height: 300px;
+      margin-top: 40px;
+    }
+    #erin {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      background-image: url('walker_sprite.png'); /* 需要和圖片檔放在同一資料夾 */
+      background-size: 288px 72px;
+      background-position: 0 0;
+      top: 100px;
+      left: 0;
     }
   </style>
 </head>
 <body>
-
   <h1>你願意跟我出去約會嗎？🥺</h1>
   <button class="btn" id="yes">好呀❤️</button>
   <button class="btn" id="no">不要</button>
 
-  <div id="melody">
-    <img src="https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif" width="300">
-    <p>耶！我會好好準備的 💕</p>
+  <div id="scene">
+    <div id="erin"></div>
   </div>
 
   <script>
     const noBtn = document.getElementById("no");
     const yesBtn = document.getElementById("yes");
-    const melody = document.getElementById("melody");
+    const erin = document.getElementById("erin");
 
+    // 逃跑按鈕
     noBtn.addEventListener("mouseover", function () {
       const x = Math.random() * (window.innerWidth - 100);
       const y = Math.random() * (window.innerHeight - 100);
@@ -64,7 +77,19 @@
     yesBtn.addEventListener("click", function () {
       yesBtn.style.display = "none";
       noBtn.style.display = "none";
-      melody.style.display = "block";
+
+      let position = 0;
+      let frame = 0;
+      const walkInterval = setInterval(() => {
+        position += 5;
+        frame = (frame + 1) % 4;
+        erin.style.left = position + "px";
+        erin.style.backgroundPosition = `-${frame * 72}px 0`;
+
+        if (position > window.innerWidth) {
+          clearInterval(walkInterval);
+        }
+      }, 100);
     });
   </script>
 </body>
